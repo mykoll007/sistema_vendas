@@ -11,7 +11,8 @@ class Usuario {
     private $dataAtualizacao;
 
     // Método Construtor
-    public function __construct($nomeUsuario, $senha, $email, $grupoUsuarioID, $ativo = 1, $dataCriacao = null, $dataAtualizacao = null) {
+    public function __construct($id, $nomeUsuario, $senha, $email, $grupoUsuarioID, $ativo = 1, $dataCriacao = null, $dataAtualizacao = null) {
+        $this->id = $id;
         $this->nomeUsuario = $nomeUsuario;
         $this->senha = $senha;
         $this->email = $email;
@@ -53,7 +54,7 @@ class Usuario {
     public function getDataAtualizacao() {
         return $this->dataAtualizacao;
     }
-    
+
     // Setters
 }
 ?>
