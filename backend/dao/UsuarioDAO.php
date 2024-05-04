@@ -73,11 +73,34 @@ class UsuarioDAO implements BaseDAO {
         }
     }
 
-    public function create($entity) {
+    public function create($usuario) {
+        try {
+            // Preparar a consulta SQL
+            $sql = "INSERT INTO Usuario( NomeUsuario , Senha , Email , GrupoUsuarioID , Ativo , DataCriacao , DataAtualizacao , UsuarioAtualizacao )
+                    VALUES(:nomeUsuario, :senha, :email, :grupoUsuarioID, :ativo, current_timestamp(),current_timestamp(),null)";
 
+            // Preparar a instrução
+            $stmt = $this->db->prepare($sql);
+
+            // Vincular parâmetros
+            $stmt->bindParam(':nomeUsuario', $usuario->getNomeUsuario());
+            $stmt->bindParam(':senha', $usuario->getSenha());
+            $stmt->bindParam(':email', $usuario->getEmail());
+            $stmt->bindParam(':grupoUsuarioID', $usuario->getGrupoUsuarioId());
+            $stmt->bindParam(':ativo', $usuario->getAtivo());
+            
+            // Executar a instrução
+            $stmt->execute();
+
+            // Retornar verdadeiro se a inserção for bem sucedida
+            return true;
+        } catch (PDOException $e) {
+            // TO-DO: implementar log
+            return false;
+        }
     }
 
-    public function update($entity) {
+    public function update($usuario) {
 
     }
 

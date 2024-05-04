@@ -3,11 +3,9 @@
     require_once 'dao/UsuarioDAO.php';
 
     $usuarioDao = new UsuarioDAO();
-    if($usuarioDao->getById(1)) {
-        echo "Usuario Existe";
-    } else {
-        echo "Usuario Não existe";
-    }
+    $usuario = $usuarioDao->getById(1);
+    $x = $usuario->getSenha();
+    echo "$x";
 
 ?>
     <h1>Olá Sistema Vendas Body</h1>
