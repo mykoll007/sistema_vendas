@@ -48,30 +48,32 @@ class UsuarioDAO implements BaseDAO {
         try {
             // Preparar a consulta SQL
             $sql = "SELECT * FROM Usuario";
-
+    
             // Preparar a instrução
             $stmt = $this->db->prepare($sql);
-
-            // Executa a instrução
+    
+            // Executar a instrução
             $stmt->execute();
-
-            // Obtem o usuario encontrado;
-            $usuarios = $stmt->fetch(PDO::FETCH_ASSOC);
-
+    
+            // Obter todos os usuários encontrados
+            $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Retornar os usuários encontrados
             return array_map(function ($usuario) {
-                return new Usuario($usuario['Id'],
-                    $usuario['NomeUsuario'], 
-                    $usuario['Senha'], 
-                    $usuario['Email'], 
-                    $usuario['GrupoUsuarioID'],
-                    $usuario['Ativo'],
-                    $usuario['DataCriacao'],
-                    $usuario['DataAtualizacao']);
-            }, $usuarios);            
+                return new Usuario($usuario['Id'], 
+                            $usuario['NomeUsuario'], 
+                            $usuario['Senha'], 
+                            $usuario['Email'], 
+                            $usuario['GrupoUsuarioID'], 
+                            $usuario['Ativo'], 
+                            $usuario['DataCriacao'], 
+                            $usuario['DataAtualizacao']);
+            }, $usuarios);
         } catch (PDOException $e) {
-            return null;
+            return [];
         }
     }
+
 
     public function create($usuario) {
         try {
