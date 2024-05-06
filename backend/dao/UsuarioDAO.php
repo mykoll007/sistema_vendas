@@ -84,12 +84,18 @@ class UsuarioDAO implements BaseDAO {
             // Preparar a instrução
             $stmt = $this->db->prepare($sql);
 
-            // Vincular parâmetros
-            $stmt->bindParam(':nomeUsuario', $usuario->getNomeUsuario());
-            $stmt->bindParam(':senha', $usuario->getSenha());
-            $stmt->bindParam(':email', $usuario->getEmail());
-            $stmt->bindParam(':grupoUsuarioID', $usuario->getGrupoUsuarioId());
-            $stmt->bindParam(':ativo', $usuario->getAtivo());
+             // Bind parameters by reference
+            $nomeUsuario = $usuario->getNomeUsuario();
+            $senha = $usuario->getSenha();
+            $email = $usuario->getEmail();
+            $grupoUsuarioID = $usuario->getGrupoUsuarioId();
+            $ativo = $usuario->getAtivo();
+
+            $stmt->bindParam(':nomeUsuario', $nomeUsuario);
+            $stmt->bindParam(':senha', $senha);
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':grupoUsuarioID', $grupoUsuarioID);
+            $stmt->bindParam(':ativo', $ativo);
             
             // Executar a instrução
             $stmt->execute();
