@@ -90,18 +90,43 @@ class GrupoUsuarioDAO implements BaseDAO {
 
     public function update($grupoUsuario) {
         try {
-            
-
+            $sql = "UPDATE GrupoUsuario 
+                    SET Nome = :nome, Descricao = :descricao, DataCriacao = :dataCriacao, 
+                        DataAtualizacao = :dataAtualizacao, UsuarioAtualizacao = :usuarioAtualizacao, 
+                        Ativo = :ativo 
+                    WHERE Id = :id";
+            $stmt = $this->db->prepare($sql);
+            $id = $grupoUsuario->getId();
+            $nome = $grupoUsuario->getNome();
+            $descricao = $grupoUsuario->getDescricao();
+            $dataCriacao = $grupoUsuario->getDataCriacao();
+            $dataAtualizacao = $grupoUsuario->getDataAtualizacao();
+            $usuarioAtualizacao = $grupoUsuario->getUsuarioAtualizacao();
+            $ativo = $grupoUsuario->getAtivo();
+    
+            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':nome', $nome);
+            $stmt->bindParam(':descricao', $descricao);
+            $stmt->bindParam(':dataCriacao', $dataCriacao);
+            $stmt->bindParam(':dataAtualizacao', $dataAtualizacao);
+            $stmt->bindParam(':usuarioAtualizacao', $usuarioAtualizacao);
+            $stmt->bindParam(':ativo', $ativo);
+    
+            return $stmt->execute();
         } catch (PDOException $e) {
-            // TO-DO: implementar log
+            // Handle exception (e.g., log error)
             return false;
         }
     }
 
     public function delete($id) {
         try {
-            
+            $sql = "DELETE FROM GrupoUsuario WHERE Id = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            return $stmt->execute();
         } catch (PDOException $e) {
+            // Handle exception (e.g., log error)
             return false;
         }
     }
