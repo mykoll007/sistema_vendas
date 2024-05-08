@@ -14,9 +14,9 @@
     </div>
     <div id="footer-links-container">
         <ul>
-            <li><a href="index.php">Home</li>
-            <li><a href="sobre.php">Sobre</li>
-            <li><a href="login.php">Entrar / Registrar</li>
+            <li><a href="index.php">Home</a></li>
+            <li><a href="sobre.php">Sobre</a></li>
+            <li><a href="login.php">Entrar / Registrar</a></li>
         </ul>
     </div>
 </footer>
