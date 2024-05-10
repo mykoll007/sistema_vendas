@@ -19,7 +19,7 @@ if($type === "register") {
             $usuario = new Usuario(null, $new_nome, $hashed_password, $new_email, null, null, null, null);    
             $usuarioDAO = new UsuarioDAO();
             $success = $usuarioDAO->create($usuario);
-
+            
             if($success) {
                 header("Location: index.php");
                 exit();
