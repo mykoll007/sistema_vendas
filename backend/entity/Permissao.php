@@ -1,6 +1,7 @@
 <?php
 
 class Permissao {
+    private $id;
     private $nome;
     private $descricao;
     private $dataCriacao;
@@ -9,13 +10,14 @@ class Permissao {
     private $ativo;
 
     // Constructor
-    public function __construct($nome, $descricao, $dataCriacao, $dataAtualizacao, $usuarioAtualizacao, $ativo) {
+    public function __construct($id, $nome, $descricao, $dataCriacao, $dataAtualizacao, $usuarioAtualizacao, $ativo) {
         $this->nome = $nome;
         $this->descricao = $descricao;
         $this->dataCriacao = $dataCriacao;
         $this->dataAtualizacao = $dataAtualizacao;
         $this->usuarioAtualizacao = $usuarioAtualizacao;
         $this->ativo = $ativo;
+        $this->id = $id;
     }
 
     // Getters
