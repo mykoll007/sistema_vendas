@@ -160,6 +160,39 @@ class UsuarioDAO implements BaseDAO {
             return false;
         }
     }
+
+    public function getByEmail($email) {
+        try {
+            // Preparar a consulta SQL
+            $sql = "SELECT * FROM Usuario WHERE Email = :email";
+
+            // Preparar a instrução
+            $stmt = $this->db->prepare($sql);
+
+            // Vincular parâmetros
+            $stmt->bindParam(':email', $email);
+
+            // Executa a instrução
+            $stmt->execute();
+
+            // Obtem o usuario encontrado;
+            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Retorna o usuário encontrado
+            return $usuario ? 
+                new Usuario($usuario['Id'],
+                            $usuario['NomeUsuario'], 
+                            $usuario['Senha'], 
+                            $usuario['Email'], 
+                            $usuario['GrupoUsuarioID'],
+                            $usuario['Ativo'],
+                            $usuario['DataCriacao'],
+                            $usuario['DataAtualizacao']) 
+                : null;
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
 }
 
 ?>
