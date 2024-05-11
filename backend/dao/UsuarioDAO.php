@@ -161,6 +161,19 @@ class UsuarioDAO implements BaseDAO {
         }
     }
 
+    public function updateToken($id) {
+        $sql = "UPDATE Usuario SET Token = :token WHERE Id = :id";
+
+        $stmt = $this->db->prepare($sql);
+        $token = bin2hex(random_bytes(25));
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':token', $token);
+        $stmt->execute();
+        $_SESSION['token'] = $token;
+
+        return $token;
+    }
+
     public function getByEmail($email) {
         try {
             // Preparar a consulta SQL
@@ -177,6 +190,7 @@ class UsuarioDAO implements BaseDAO {
 
             // Obtem o usuario encontrado;
             $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+            $this->updateToken($usuario['Id']);
 
             // Retorna o usuário encontrado
             return $usuario ? 

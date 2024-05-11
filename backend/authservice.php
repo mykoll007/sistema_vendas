@@ -35,18 +35,17 @@ if($type === "register") {
 } elseif ($type === "login") {
     // TODO: verificar se o usuário tem cadastro
     $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
+    $password = filter_input(INPUT_POST, "password");
     $usuarioDAO = new UsuarioDAO();
     $usuario = $usuarioDAO->getByEmail($email);
 
-    if($usuario) {
-        $_SESSION = $usuario->generateToken();
+    if($usuario && password_verify($password, $usuario->getSenha())) {        
         header("Location: index.php");
         exit();
     } else {
         header("Location: error_page.php");
         exit();
     }
-    // dar ao usuário um token de sessão para navegar no site
 }
 
 ?>

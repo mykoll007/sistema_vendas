@@ -9,7 +9,6 @@ class Usuario {
     private $ativo;
     private $dataCriacao;
     private $dataAtualizacao;
-    private $token;
 
     // Método Construtor
     public function __construct($id, $nomeUsuario, $senha, $email, $grupoUsuarioID, $ativo = 1, $dataCriacao = null, $dataAtualizacao = null) {
@@ -55,11 +54,5 @@ class Usuario {
     public function getDataAtualizacao() {
         return $this->dataAtualizacao;
     }
-
-    public function generateToken() {
-        $this->token = bin2hex(random_bytes(25));
-        return $this->token;
-    }
-    // Setters
 }
 ?>
