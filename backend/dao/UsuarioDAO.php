@@ -89,19 +89,17 @@ class UsuarioDAO implements BaseDAO {
             $senha = $usuario->getSenha();
             $email = $usuario->getEmail();
             $grupoUsuarioID = $usuario->getGrupoUsuarioId();
-            $ativo = $usuario->getAtivo();
-            $token = $usuario->generateToken();
+            $ativo = $usuario->getAtivo();           
 
             $stmt->bindParam(':nomeUsuario', $nomeUsuario);
             $stmt->bindParam(':senha', $senha);
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':grupoUsuarioID', $grupoUsuarioID);
-            $stmt->bindParam(':ativo', $ativo);
-            $stmt->bindParam(':token', $token);
+            $stmt->bindParam(':ativo', $ativo);            
             
             // Executar a instrução
             $stmt->execute();
-
+            $this->updateToken($stmt->fetch(PDO::FETCH_ASSOC)->row['Id']);
             // Retornar verdadeiro se a inserção for bem sucedida
             return true;
         } catch (PDOException $e) {
