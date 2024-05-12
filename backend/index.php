@@ -1,7 +1,9 @@
 <?php
+session_start();
 require_once("template/header.php");
 ?>
 <div class="container">
+    <?php echo $_SESSION['token'] ?>
     <div class="row row-cols-1 row-cols-md-3 g-4">
         <?php for ($i = 0; $i < 6; $i++) : ?>
             <div class="col">

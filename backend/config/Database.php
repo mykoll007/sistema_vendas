@@ -8,7 +8,7 @@ class Database {
             $host = 'localhost';
             $dbname = 'sistema_vendas';
             $username = 'root';
-            $password = '';
+            $password = 'Root@123';
 
             self::$instance = new PDO("mysql:host=$host;dbname=$dbname", $username , $password);
             self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

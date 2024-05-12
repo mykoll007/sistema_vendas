@@ -6,6 +6,7 @@ require_once 'BaseDAO.php';
 
 class UsuarioDAO implements BaseDAO {
     private $db;
+    private $grupoUsuarioGenericoId = 3;
 
     public function __construct() {
         $this->db = Database::getInstance();
@@ -90,18 +91,20 @@ class UsuarioDAO implements BaseDAO {
             $nomeUsuario = $usuario->getNomeUsuario();
             $senha = $usuario->getSenha();
             $email = $usuario->getEmail();
-            $grupoUsuarioID = $usuario->getGrupoUsuarioId();
-            $ativo = $usuario->getAtivo();           
+            $grupoUsuarioID = $this->grupoUsuarioGenericoId; // Por padrao, todo usuario vai para o grupo generico no cadastro
+            $ativo = $usuario->getAtivo();
+            $token = $usuario->getToken();
 
             $stmt->bindParam(':nomeUsuario', $nomeUsuario);
             $stmt->bindParam(':senha', $senha);
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':grupoUsuarioID', $grupoUsuarioID);
-            $stmt->bindParam(':ativo', $ativo);            
+            $stmt->bindParam(':ativo', $ativo);
+            $stmt->bindParam(':token', $token);
             
             // Executar a instrução
             $stmt->execute();
-            $this->updateToken($stmt->fetch(PDO::FETCH_ASSOC)->row['Id']);
+
             // Retornar verdadeiro se a inserção for bem sucedida
             return true;
         } catch (PDOException $e) {
@@ -120,7 +123,7 @@ class UsuarioDAO implements BaseDAO {
             }
 
             $sql = "UPDATE Usuario SET NomeUsuario = :nomeUsuario, Senha = :senha, Email = :email,
-            GrupoUsuarioID = :grupoUsuarioID, Ativo = :ativo, DataAtualizacao = current_timestamp()
+            GrupoUsuarioID = :grupoUsuarioID, Ativo = :ativo, DataAtualizacao = current_timestamp(), Token = :toekn
             WHERE Id = :id";
 
             $stmt = $this->db->prepare($sql);
@@ -137,6 +140,7 @@ class UsuarioDAO implements BaseDAO {
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':grupoUsuarioID', $grupoUsuarioId);
             $stmt->bindParam(':ativo', $ativo);
+            $stmt->bindParam(':token', $usuario->token);
 
             $stmt->execute();
 
@@ -161,11 +165,11 @@ class UsuarioDAO implements BaseDAO {
         }
     }
 
-    public function updateToken($id) {
+    public function updateToken($id, $token) {
         $sql = "UPDATE Usuario SET Token = :token WHERE Id = :id";
 
         $stmt = $this->db->prepare($sql);
-        $token = bin2hex(random_bytes(25));
+        
         $stmt->bindParam(':id', $id);
         $stmt->bindParam(':token', $token);
         $stmt->execute();
@@ -189,8 +193,7 @@ class UsuarioDAO implements BaseDAO {
             $stmt->execute();
 
             // Obtem o usuario encontrado;
-            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
-            $this->updateToken($usuario['Id']);
+            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);            
 
             // Retorna o usuário encontrado
             return $usuario ? 

@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 require_once 'entity/Usuario.php';
 require_once 'dao/UsuarioDAO.php';
 
@@ -21,21 +21,23 @@ if($type === "register") {
             $token = bin2hex(random_bytes(25));
             
             // Criacao do Usuario no banco de dados por uso do UsuarioDAO
-            $usuario = new Usuario(null, $new_nome, $hashed_password, $new_email, null, null, null, null, $token);
+            $usuario = new Usuario(null, $new_nome, $hashed_password, $new_email, null, $token, null, null);
             $usuarioDAO = new UsuarioDAO();
             $success = $usuarioDAO->create($usuario);
             
             if($success) {
+                $_SESSION['token'] = $token;
                 header("Location: index.php");
                 exit();
             } else {
-                // Tratar falha de registro em BD
+                echo "Erro ao registrar em DB $success";
+                print_r($usuario);
             }
         } else {
-            // TODO: exibir mensaem de senhas incompatíveis
+            echo "Senhas incompativeis";
         }
     } else {
-        // TODO: exibir mensagem de formulário inválido
+        echo "Dados de input invalidos";
     }
 } elseif ($type === "login") {
     // Recebimento dos dados vindos por input do HTML
@@ -47,7 +49,11 @@ if($type === "register") {
     $usuario = $usuarioDAO->getByEmail($email);
 
     // Redirecionamento de usuario apos login
-    if($usuario && password_verify($password, $usuario->getSenha())) {        
+    if($usuario && password_verify($password, $usuario->getSenha())) {
+        $token = bin2hex(random_bytes(25));
+
+        $usuarioDAO->updateToken($usuario->getId(), $token);
+        $_SESSION['token'] = $token;
         header("Location: index.php");
         exit();
     } else {
