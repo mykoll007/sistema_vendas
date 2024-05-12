@@ -37,7 +37,8 @@ class UsuarioDAO implements BaseDAO {
                             $usuario['GrupoUsuarioID'],
                             $usuario['Ativo'],
                             $usuario['DataCriacao'],
-                            $usuario['DataAtualizacao']) 
+                            $usuario['DataAtualizacao'],
+                            $usuario['Token']) 
                 : null;
         } catch (PDOException $e) {
             return null;
@@ -67,7 +68,8 @@ class UsuarioDAO implements BaseDAO {
                             $usuario['GrupoUsuarioID'], 
                             $usuario['Ativo'], 
                             $usuario['DataCriacao'], 
-                            $usuario['DataAtualizacao']);
+                            $usuario['DataAtualizacao'],
+                            $usuario['Token']);
             }, $usuarios);
         } catch (PDOException $e) {
             return [];
@@ -199,7 +201,8 @@ class UsuarioDAO implements BaseDAO {
                             $usuario['GrupoUsuarioID'],
                             $usuario['Ativo'],
                             $usuario['DataCriacao'],
-                            $usuario['DataAtualizacao']) 
+                            $usuario['DataAtualizacao'],
+                            $usuario['Token']) 
                 : null;
         } catch (PDOException $e) {
             return null;

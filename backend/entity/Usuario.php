@@ -9,9 +9,10 @@ class Usuario {
     private $ativo;
     private $dataCriacao;
     private $dataAtualizacao;
+    private $token;
 
     // Método Construtor
-    public function __construct($id, $nomeUsuario, $senha, $email, $grupoUsuarioID, $ativo = 1, $dataCriacao = null, $dataAtualizacao = null) {
+    public function __construct($id, $nomeUsuario, $senha, $email, $grupoUsuarioID, $ativo = 1, $dataCriacao = null, $dataAtualizacao = null, $token) {
         $this->id = $id;
         $this->nomeUsuario = $nomeUsuario;
         $this->senha = $senha;
@@ -20,6 +21,7 @@ class Usuario {
         $this->ativo = $ativo;
         $this->dataCriacao = $dataCriacao;
         $this->dataAtualizacao = $dataAtualizacao;
+        $this->token = $token;
     }
 
     // Getters
@@ -53,6 +55,10 @@ class Usuario {
 
     public function getDataAtualizacao() {
         return $this->dataAtualizacao;
+    }
+    
+    public function getToken() {
+        return $this->token;
     }
 }
 ?>
