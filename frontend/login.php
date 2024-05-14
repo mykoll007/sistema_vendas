@@ -4,7 +4,7 @@ require_once("template/header.php");
 <div class="row justify-content-center">
     <div class="col-md-6">
         <h2>Login</h2>
-        <form action="authservice.php" method="post">
+        <form action="../backend/authservice.php" method="post">
             <input type="hidden" name="type" value="login">
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
@@ -19,7 +19,7 @@ require_once("template/header.php");
     </div>
     <div class="col-md-6">
         <h2>Cadastro</h2>
-        <form action="authservice.php" method="post">
+        <form action="../backend/authservice.php" method="post">
             <input type="hidden" name="type" value="register">
             <div class="mb-3">
                 <label for="new_nome" class="form-label">Nome</label>

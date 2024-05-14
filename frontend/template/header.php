@@ -1,3 +1,8 @@
+<?php
+session_start();
+?>
+
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -46,6 +51,14 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+                        </li>
+
+                        <!-- Item de menu para o logout -->
+                        <li class="nav-item">
+                            <form action="../backend/authservice.php" method="post">
+                                <input type="hidden" name="type" value="logout">
+                                <button class="nav-link" type="submit">Logout</button>
+                            </form>
                         </li>
                     </ul>
                     <form class="d-flex" role="search">
