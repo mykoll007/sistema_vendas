@@ -6,6 +6,7 @@ require_once 'BaseDAO.php';
 
 class UsuarioDAO implements BaseDAO {
     private $db;
+    private $grupoUsuarioGenericoId = 3;
 
     public function __construct() {
         $this->db = Database::getInstance();
@@ -37,7 +38,8 @@ class UsuarioDAO implements BaseDAO {
                             $usuario['GrupoUsuarioID'],
                             $usuario['Ativo'],
                             $usuario['DataCriacao'],
-                            $usuario['DataAtualizacao']) 
+                            $usuario['DataAtualizacao'],
+                            $usuario['Token']) 
                 : null;
         } catch (PDOException $e) {
             return null;
@@ -67,7 +69,8 @@ class UsuarioDAO implements BaseDAO {
                             $usuario['GrupoUsuarioID'], 
                             $usuario['Ativo'], 
                             $usuario['DataCriacao'], 
-                            $usuario['DataAtualizacao']);
+                            $usuario['DataAtualizacao'],
+                            $usuario['Token']);
             }, $usuarios);
         } catch (PDOException $e) {
             return [];
@@ -88,9 +91,9 @@ class UsuarioDAO implements BaseDAO {
             $nomeUsuario = $usuario->getNomeUsuario();
             $senha = $usuario->getSenha();
             $email = $usuario->getEmail();
-            $grupoUsuarioID = $usuario->getGrupoUsuarioId();
+            $grupoUsuarioID = $this->grupoUsuarioGenericoId; // Por padrao, todo usuario vai para o grupo generico no cadastro
             $ativo = $usuario->getAtivo();
-            $token = $usuario->generateToken();
+            $token = $usuario->getToken();
 
             $stmt->bindParam(':nomeUsuario', $nomeUsuario);
             $stmt->bindParam(':senha', $senha);
@@ -120,7 +123,7 @@ class UsuarioDAO implements BaseDAO {
             }
 
             $sql = "UPDATE Usuario SET NomeUsuario = :nomeUsuario, Senha = :senha, Email = :email,
-            GrupoUsuarioID = :grupoUsuarioID, Ativo = :ativo, DataAtualizacao = current_timestamp()
+            GrupoUsuarioID = :grupoUsuarioID, Ativo = :ativo, DataAtualizacao = current_timestamp(), Token = :toekn
             WHERE Id = :id";
 
             $stmt = $this->db->prepare($sql);
@@ -137,6 +140,7 @@ class UsuarioDAO implements BaseDAO {
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':grupoUsuarioID', $grupoUsuarioId);
             $stmt->bindParam(':ativo', $ativo);
+            $stmt->bindParam(':token', $usuario->token);
 
             $stmt->execute();
 
@@ -158,6 +162,53 @@ class UsuarioDAO implements BaseDAO {
             return true;
         } catch (PDOException $e) {
             return false;
+        }
+    }
+
+    public function updateToken($id, $token) {
+        $sql = "UPDATE Usuario SET Token = :token WHERE Id = :id";
+
+        $stmt = $this->db->prepare($sql);
+        
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':token', $token);
+        $stmt->execute();
+        $_SESSION['token'] = $token;
+
+        return $token;
+    }
+
+    public function getByEmail($email) {
+        try {
+            // Preparar a consulta SQL
+            $sql = "SELECT * FROM Usuario WHERE Email = :email";
+
+            // Preparar a instrução
+            $stmt = $this->db->prepare($sql);
+
+            // Vincular parâmetros
+            $stmt->bindParam(':email', $email);
+
+            // Executa a instrução
+            $stmt->execute();
+
+            // Obtem o usuario encontrado;
+            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);            
+
+            // Retorna o usuário encontrado
+            return $usuario ? 
+                new Usuario($usuario['Id'],
+                            $usuario['NomeUsuario'], 
+                            $usuario['Senha'], 
+                            $usuario['Email'], 
+                            $usuario['GrupoUsuarioID'],
+                            $usuario['Ativo'],
+                            $usuario['DataCriacao'],
+                            $usuario['DataAtualizacao'],
+                            $usuario['Token']) 
+                : null;
+        } catch (PDOException $e) {
+            return null;
         }
     }
 }
