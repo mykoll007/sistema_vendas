@@ -25,7 +25,7 @@ $produtosMock = [
                         <h5 class="card-title"><?php echo htmlspecialchars($produto->getNome(), ENT_QUOTES, 'UTF-8'); ?></h5>
                         <p class="card-text"><?php echo htmlspecialchars($produto->getDescricao(), ENT_QUOTES, 'UTF-8'); ?></p>
                         <p class="card-text"><strong>Preço: </strong>R$<?php echo number_format($produto->getPreco(), 2, ',', '.'); ?></p>
-                        <a href="#" class="btn btn-primary">Detalhes</a>
+                        <a href="produtoDetalhes.php?id=<?php echo $produto->getId(); ?>" class="btn btn-primary">Detalhes</a>
                     </div>
                 </div>
             </div>
