@@ -1,7 +1,8 @@
 <?php
 
-require_once '../config/Database.php';
-require_once '../entity/Usuario.php';
+require_once 'backend/config/Database.php';
+require_once 'backend/entity/Usuario.php';
+require_once 'backend/entity/GrupoUsuario.php';
 require_once 'BaseDAO.php';
 
 class UsuarioDAO implements BaseDAO {
@@ -67,6 +68,60 @@ class UsuarioDAO implements BaseDAO {
             return [];
         }
     }
+
+    public function getUsuarioWithGrupo($usuarioID) {
+        $sql = "SELECT 
+                    u.Id AS u_id,
+                    u.NomeUsuario AS u_nomeUsuario,
+                    u.Senha AS u_senha,
+                    u.Email AS u_email,
+                    u.GrupoUsuarioID AS u_grupoUsuarioID,
+                    u.Ativo AS u_ativo,
+                    u.DataCriacao AS u_dataCriacao,
+                    u.DataAtualizacao AS u_dataAtualizacao,
+                    u.UsuarioAtualizacao AS u_usuarioAtualizacao,
+                    g.Id AS g_id,
+                    g.Nome AS g_nome,
+                    g.Descricao AS g_descricao,
+                    g.DataCriacao AS g_dataCriacao,
+                    g.DataAtualizacao AS g_dataAtualizacao,
+                    g.UsuarioAtualizacao AS g_usuarioAtualizacao,
+                    g.Ativo AS g_ativo
+                FROM Usuario u
+                JOIN GrupoUsuario g ON u.GrupoUsuarioID = g.Id
+                WHERE u.Id = :usuarioID";
+    
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':usuarioID', $usuarioID);
+        $stmt->execute();
+        
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        $grupoUsuario = new GrupoUsuario(
+            $row['g_id'],
+            $row['g_nome'],
+            $row['g_descricao'],
+            $row['g_dataCriacao'],
+            $row['g_dataAtualizacao'],
+            $row['g_ativo']
+        );
+    
+        $usuario = new Usuario(
+            $row['u_id'],
+            $row['u_nomeUsuario'],
+            $row['u_senha'],
+            $row['u_email'],
+            $row['u_grupoUsuarioID'],
+            null, 
+            $row['u_dataCriacao'],
+            $row['u_dataAtualizacao']
+        );
+    
+        $usuario->setGrupoUsuario($grupoUsuario);
+    
+        return $usuario;
+    }
+    
 
     public function create($usuario) {
         try {
