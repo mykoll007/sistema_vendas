@@ -114,36 +114,6 @@ class PermissaoDAO implements BaseDAO
             return false;
         }
     }
-
-    public function getPermissaoByGrupoUsuarioId($grupoUsuarioId) {
-        try {
-            $sql = "SELECT Permissao.* FROM Permissao
-                    INNER JOIN PermissaoGrupo ON Permissao.Id = PermissaoGrupo.PermissaoID
-                    WHERE PermissaoGrupo.PermissaoID = :grupoUsuarioId";
-            
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([':grupoUsuarioId' => $grupoUsuarioId]);
-
-            $permissoes = [];
-
-            while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $permissoes = new Permissao(
-                    $row['Id'],
-                    $row['Nome'],
-                    $row['Descricao'],
-                    $row['DataCriacao'],
-                    $row['DataAtualizacao'],
-                    $row['UsuarioAtualizacao'],
-                    $row['Ativo']
-                );
-            }
-            return $permissoes;
-
-        } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return[];
-        }
-    }
 }
 
 ?>

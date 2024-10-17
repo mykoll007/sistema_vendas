@@ -7,7 +7,7 @@ INSERT INTO GrupoUsuario (Nome, Descricao) VALUES
 -- Usuário Padrão
 INSERT INTO Usuario
 (`NomeUsuario`,`Senha`,`Email`,`GrupoUsuarioID`,`Ativo`,`DataCriacao`,`DataAtualizacao`,`UsuarioAtualizacao`) VALUES
-('System','System@123','system@mail.com', 1,1, current_timestamp(), current_timestamp(),null);
+('MasterUser','System@123','system@mail.com', 1,1, current_timestamp(), current_timestamp(),null);
 
 -- Permissões padrão do Sistema
 INSERT INTO Permissao (Nome, Descricao) VALUES

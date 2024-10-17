@@ -42,10 +42,6 @@ class Permissao {
     public function getAtivo() {
         return $this->ativo;
     }
-
-    public function __toString() {
-        return "Permissao ID: $this->id, Nome: $this->nome, Descricao: $this->descricao";
-    }
 }
 
 
