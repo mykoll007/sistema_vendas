@@ -1,7 +1,7 @@
 <?php
 
-require_once 'config/Database.php';
-require_once 'entity/Usuario.php';
+require_once '../config/Database.php';
+require_once '../entity/Usuario.php';
 require_once 'BaseDAO.php';
 
 class UsuarioDAO implements BaseDAO {
@@ -14,22 +14,14 @@ class UsuarioDAO implements BaseDAO {
 
     public function getById($id) {
         try {
-            // Preparar a consulta SQL
             $sql = "SELECT * FROM Usuario WHERE Id = :id";
 
-            // Preparar a instrução
             $stmt = $this->db->prepare($sql);
 
-            // Vincular parâmetros
-            $stmt->bindParam(':id', $id);
+            $stmt->execute([':id' => $id]);
 
-            // Executa a instrução
-            $stmt->execute();
-
-            // Obtem o usuario encontrado;
             $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // Retorna o usuário encontrado
             return $usuario ? 
                 new Usuario($usuario['Id'],
                             $usuario['NomeUsuario'], 
@@ -42,112 +34,89 @@ class UsuarioDAO implements BaseDAO {
                             $usuario['Token']) 
                 : null;
         } catch (PDOException $e) {
+            error_log($e->getMessage());
             return null;
         }
     }
 
     public function getAll() {
         try {
-            // Preparar a consulta SQL
             $sql = "SELECT * FROM Usuario";
     
-            // Preparar a instrução
             $stmt = $this->db->prepare($sql);
     
-            // Executar a instrução
             $stmt->execute();
     
-            // Obter todos os usuários encontrados
             $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-            // Retornar os usuários encontrados
             return array_map(function ($usuario) {
-                return new Usuario($usuario['Id'], 
-                            $usuario['NomeUsuario'], 
-                            $usuario['Senha'], 
-                            $usuario['Email'], 
-                            $usuario['GrupoUsuarioID'], 
-                            $usuario['Ativo'], 
-                            $usuario['DataCriacao'], 
-                            $usuario['DataAtualizacao'],
-                            $usuario['Token']);
+                return new Usuario(
+                    $usuario['Id'],
+                    $usuario['NomeUsuario'],
+                    $usuario['Senha'],
+                    $usuario['Email'],
+                    $usuario['GrupoUsuarioID'],
+                    $usuario['Ativo'],
+                    $usuario['DataCriacao'],
+                    $usuario['DataAtualizacao'],
+                    $usuario['Token']
+                );
             }, $usuarios);
         } catch (PDOException $e) {
+            error_log($e->getMessage());
             return [];
         }
     }
 
-
     public function create($usuario) {
         try {
-            // Preparar a consulta SQL
             $sql = "INSERT INTO Usuario( NomeUsuario , Senha , Email , GrupoUsuarioID , Ativo , DataCriacao , DataAtualizacao , UsuarioAtualizacao, Token)
                     VALUES(:nomeUsuario, :senha, :email, :grupoUsuarioID, :ativo, current_timestamp(),current_timestamp(),null, :token)";
 
-            // Preparar a instrução
             $stmt = $this->db->prepare($sql);
-
-             // Bind parameters by reference
-            $nomeUsuario = $usuario->getNomeUsuario();
-            $senha = $usuario->getSenha();
-            $email = $usuario->getEmail();
-            $grupoUsuarioID = $this->grupoUsuarioGenericoId; // Por padrao, todo usuario vai para o grupo generico no cadastro
-            $ativo = $usuario->getAtivo();
-            $token = $usuario->getToken();
-
-            $stmt->bindParam(':nomeUsuario', $nomeUsuario);
-            $stmt->bindParam(':senha', $senha);
-            $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':grupoUsuarioID', $grupoUsuarioID);
-            $stmt->bindParam(':ativo', $ativo);
-            $stmt->bindParam(':token', $token);
             
-            // Executar a instrução
-            $stmt->execute();
+            $stmt->execute([
+                ':nomeUsuario' => $usuario->getNomeUsuario(),
+                ':senha' => $usuario->getSenha(),
+                ':email' => $usuario->getEmail(),
+                ':grupoUsuarioID' => this->grupoUsuarioGenericoId,
+                ':ativo' => $usuario->getAtivo(),
+                ':token' => $usuario->getToken()
+            ]);
 
-            // Retornar verdadeiro se a inserção for bem sucedida
             return true;
         } catch (PDOException $e) {
-            // TO-DO: implementar log
+            error_log($e->getMessage());
             return false;
         }
     }
 
     public function update($usuario) {
         try {
-            // Verifico se o usuário existe no banco de dados
             $existingUser = $this->getById($usuario->getId());
 
             if(!$existingUser) {
-                return false;// Retorna falso se o usuário não existir
             }
 
             $sql = "UPDATE Usuario SET NomeUsuario = :nomeUsuario, Senha = :senha, Email = :email,
-            GrupoUsuarioID = :grupoUsuarioID, Ativo = :ativo, DataAtualizacao = current_timestamp(), Token = :toekn
+            GrupoUsuarioID = :grupoUsuarioID, Ativo = :ativo, DataAtualizacao = current_timestamp(), Token = :token
             WHERE Id = :id";
 
             $stmt = $this->db->prepare($sql);
-            $id = $usuario->getId();
-            $nome = $usuario->getNomeUsuario();
-            $senha = $usuario->getSenha();
-            $email = $usuario->getEmail();
-            $grupoUsuarioId = $usuario->getGrupoUsuarioId();
-            $ativo = $usuario->getAtivo();
 
-            $stmt->bindParam(':id', $id);
-            $stmt->bindParam(':nomeUsuario', $nome);
-            $stmt->bindParam(':senha', $senha);
-            $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':grupoUsuarioID', $grupoUsuarioId);
-            $stmt->bindParam(':ativo', $ativo);
-            $stmt->bindParam(':token', $usuario->token);
-
-            $stmt->execute();
+            $stmt->execute([
+                ':id' => $usuario->getId(),
+                ':nomeUsuario' => $usuario->getNomeUsuario(),
+                ':senha' => $usuario->getSenha(),
+                ':email' => $usuario->getEmail(),
+                ':grupoUsuarioID' => $usuario->getGrupoUsuarioId(),
+                ':ativo' => $usuario->getAtivo(),
+                ':token' => $usuario->getToken()
+            ]);
 
             return true;
-
         } catch (PDOException $e) {
-            // TO-DO: implementar log
+            error_log($e->getMessage());
             return false;
         }
     }
@@ -156,11 +125,11 @@ class UsuarioDAO implements BaseDAO {
         try {
             $sql = "DELETE FROM Usuario WHERE Id = :id";
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':id', $id);
-            $stmt->execute();
+            $stmt->execute([':id' => $id]);
 
             return true;
         } catch (PDOException $e) {
+            error_log($e->getMessage());
             return false;
         }
     }
@@ -169,33 +138,25 @@ class UsuarioDAO implements BaseDAO {
         $sql = "UPDATE Usuario SET Token = :token WHERE Id = :id";
 
         $stmt = $this->db->prepare($sql);
-        
-        $stmt->bindParam(':id', $id);
-        $stmt->bindParam(':token', $token);
-        $stmt->execute();
-        $_SESSION['token'] = $token;
+
+        $stmt->execute([
+            ':id' => $id,
+            ':token' => $token
+        ]);
 
         return $token;
     }
 
     public function getByEmail($email) {
         try {
-            // Preparar a consulta SQL
             $sql = "SELECT * FROM Usuario WHERE Email = :email";
 
-            // Preparar a instrução
             $stmt = $this->db->prepare($sql);
 
-            // Vincular parâmetros
-            $stmt->bindParam(':email', $email);
+            $stmt->execute([':email' => $email]);
 
-            // Executa a instrução
-            $stmt->execute();
-
-            // Obtem o usuario encontrado;
             $usuario = $stmt->fetch(PDO::FETCH_ASSOC);            
 
-            // Retorna o usuário encontrado
             return $usuario ? 
                 new Usuario($usuario['Id'],
                             $usuario['NomeUsuario'], 
@@ -208,6 +169,7 @@ class UsuarioDAO implements BaseDAO {
                             $usuario['Token']) 
                 : null;
         } catch (PDOException $e) {
+            error_log($e->getMessage());
             return null;
         }
     }

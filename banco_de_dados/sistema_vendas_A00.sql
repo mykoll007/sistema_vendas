@@ -79,7 +79,6 @@ CREATE TABLE IF NOT EXISTS ItemPedido (
     FOREIGN KEY (ProdutoId) REFERENCES Produto(Id)
 );
 
--- Tabela GrupoUsuario
 CREATE TABLE IF NOT EXISTS GrupoUsuario (
     Id INT AUTO_INCREMENT PRIMARY KEY,
     Nome VARCHAR(100) NOT NULL,
@@ -90,7 +89,6 @@ CREATE TABLE IF NOT EXISTS GrupoUsuario (
     Ativo TINYINT(1) DEFAULT 1
 );
 
--- Tabela Permissao
 CREATE TABLE IF NOT EXISTS Permissao (
     Id INT AUTO_INCREMENT PRIMARY KEY,
     Nome VARCHAR(100) NOT NULL,
@@ -101,7 +99,6 @@ CREATE TABLE IF NOT EXISTS Permissao (
     Ativo TINYINT(1) DEFAULT 1
 );
 
--- Tabela PermissaoGrupo
 CREATE TABLE IF NOT EXISTS PermissaoGrupo (
     PermissaoID INT,
     GrupoUsuarioID INT,
@@ -110,7 +107,6 @@ CREATE TABLE IF NOT EXISTS PermissaoGrupo (
     FOREIGN KEY (GrupoUsuarioID) REFERENCES GrupoUsuario(Id)
 );
 
--- Tabela Usuario
 CREATE TABLE IF NOT EXISTS Usuario (
     Id INT AUTO_INCREMENT PRIMARY KEY,
     NomeUsuario VARCHAR(50) NOT NULL,
@@ -121,7 +117,7 @@ CREATE TABLE IF NOT EXISTS Usuario (
     DataCriacao DATETIME DEFAULT CURRENT_TIMESTAMP,
     DataAtualizacao DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UsuarioAtualizacao INT,
-    UNIQUE (NomeUsuario), -- Restrição UNIQUE na coluna NomeUsuario
-    UNIQUE (Email), -- Restrição UNIQUE na coluna Email
+    UNIQUE (NomeUsuario),
+    UNIQUE (Email),
     FOREIGN KEY (GrupoUsuarioID) REFERENCES GrupoUsuario(Id)
 );

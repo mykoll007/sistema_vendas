@@ -1,6 +1,5 @@
 <?php
 class Usuario {
-    // Propriedades
     private $id;
     private $nomeUsuario;
     private $senha;
@@ -10,8 +9,7 @@ class Usuario {
     private $dataCriacao;
     private $dataAtualizacao;
     private $token;
-
-    // Método Construtor
+   
     public function __construct($id, $nomeUsuario, $senha, $email, $grupoUsuarioID, $token, $dataCriacao = null, $dataAtualizacao = null) {
         $this->id = $id;
         $this->nomeUsuario = $nomeUsuario;

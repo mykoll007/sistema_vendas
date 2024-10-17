@@ -1,6 +1,5 @@
 <?php
-class GrupoUsuario {
-    // Propriedades
+class GrupoUsuario {    
     private $id;
     private $nome;
     private $descricao;    
@@ -9,14 +8,13 @@ class GrupoUsuario {
     private $usuarioAtualizacao;
     private $ativo;
 
-    // Construtor
     public function __construct($id, $nome, $descricao, $dataCriacao, $dataAtualizacao, $ativo = 1) {
         $this->id = $id;
         $this->nome = $nome;
         $this->descricao = $descricao;
         $this->dataCriacao = $dataCriacao;
         $this->dataAtualizacao = $dataAtualizacao;
-        $this->usuarioAtualizacao = null; // implementar ao gerenciar usuário
+        $this->usuarioAtualizacao = null; 
         $this->ativo = $ativo;
     }
 

@@ -1,7 +1,7 @@
 <?php
 
-require_once 'config/Database.php';
-require_once 'entity/GrupoUsuario.php';
+require_once '../config/Database.php';
+require_once '../entity/GrupoUsuario.php';
 require_once 'BaseDAO.php';
 
 class GrupoUsuarioDAO implements BaseDAO {
@@ -14,9 +14,10 @@ class GrupoUsuarioDAO implements BaseDAO {
     public function getById($id) {
         try {
             $sql = "SELECT * FROM GrupoUsuario WHERE Id = :id";
+
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
+            $stmt->execute([':id' => $id]);
+
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if($result) {
@@ -32,6 +33,7 @@ class GrupoUsuarioDAO implements BaseDAO {
             
             return null;
         } catch (PDOException $e) {
+            error_log($e->getMessage());
             return null;
         }
     }
@@ -40,21 +42,20 @@ class GrupoUsuarioDAO implements BaseDAO {
         try {
             $sql = "SELECT * FROM GrupoUsuario WHERE";
             $stmt = $this->db->prepare($sql);
-            $grupos = [];
+            $grupos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $grupos = new GrupoUsuario(
-                    null,
-                    $row['Nome'],
-                    $row['Descricao'],
-                    $row['DataCriacao'],
-                    $row['DataAtualizacao'],
-                    $row['Ativo']
+            return array_map(function ($grupo) {
+                return new GrupoUsuario(
+                    $grupo['Id'],
+                    $grupo['Nome'],
+                    $grupo['Descricao'],
+                    $grupo['DataCriacao'],
+                    $grupo['DataAtualizacao'],
+                    $grupo['Ativo']
                 );
-            }
-           
-            return $grupos;
+            }, $grupos);
         } catch (PDOException $e) {
+            error_log($e->getMessage());
             return [];
         }
     }
@@ -66,24 +67,17 @@ class GrupoUsuarioDAO implements BaseDAO {
                     VALUES (:nome, :descricao, :dataCriacao, :dataAtualizacao, :usuarioAtualizacao, :ativo)";
             
             $stmt = $this->db->prepare($sql);
-                        
-            $nome = $grupoUsuario->getNome();
-            $descricao = $grupoUsuario->getDescricao();
-            $dataCriacao = $grupoUsuario->getDataCriacao();
-            $dataAtualizacao = $grupoUsuario->getDataAtualizacao();
-            $usuarioAtualizacao = null;
-            $ativo = $grupoUsuario->getAtivo();
 
-            $stmt->bindParam(':nome', $nome);
-            $stmt->bindParam(':descricao', $descricao);
-            $stmt->bindParam(':dataCriacao', $dataCriacao);
-            $stmt->bindParam(':dataAtualizacao', $dataAtualizacao);
-            $stmt->bindParam(':usuarioAtualizacao', $usuarioAtualizacao);
-            $stmt->bindParam(':ativo', $ativo);
-
-            return $stmt->execute();
+            return $stmt->execute([
+                ':nome' => $grupoUsuario->getNome(),
+                ':descricao' => $grupoUsuario->getDescricao(),
+                ':dataCriacao' => $grupoUsuario->getDataCriacao(),
+                ':dataAtualizacao' => $grupoUsuario->getDataAtualizacao(),
+                ':usuarioAtualizacao' => $grupoUsuario->getUsuarioAtualizacao(),
+                ':ativo' => $grupoUsuario->getAtivo()
+            ]);
         } catch (PDOException $e) {
-            // TO-DO: implementar log
+            error_log($e->getMessage());
             return false;
         }
     }
@@ -96,25 +90,18 @@ class GrupoUsuarioDAO implements BaseDAO {
                         Ativo = :ativo 
                     WHERE Id = :id";
             $stmt = $this->db->prepare($sql);
-            $id = $grupoUsuario->getId();
-            $nome = $grupoUsuario->getNome();
-            $descricao = $grupoUsuario->getDescricao();
-            $dataCriacao = $grupoUsuario->getDataCriacao();
-            $dataAtualizacao = $grupoUsuario->getDataAtualizacao();
-            $usuarioAtualizacao = $grupoUsuario->getUsuarioAtualizacao();
-            $ativo = $grupoUsuario->getAtivo();
     
-            $stmt->bindParam(':id', $id);
-            $stmt->bindParam(':nome', $nome);
-            $stmt->bindParam(':descricao', $descricao);
-            $stmt->bindParam(':dataCriacao', $dataCriacao);
-            $stmt->bindParam(':dataAtualizacao', $dataAtualizacao);
-            $stmt->bindParam(':usuarioAtualizacao', $usuarioAtualizacao);
-            $stmt->bindParam(':ativo', $ativo);
-    
-            return $stmt->execute();
+            return $stmt->execute([
+                ':id' => $grupoUsuario->getId(),
+                ':nome' => $grupoUsuario->getNome(),
+                ':descricao' => $grupoUsuario->getDescricao(),
+                ':dataCriacao' => $grupoUsuario->getDataCriacao(),
+                ':dataAtualizacao' => $grupoUsuario->getDataAtualizacao(),
+                ':usuarioAtualizacao' => $grupoUsuario->getUsuarioAtualizacao(),
+                ':ativo' => $grupoUsuario->getAtivo()
+            ]);
         } catch (PDOException $e) {
-            // Handle exception (e.g., log error)
+            error_log($e->getMessage());
             return false;
         }
     }
@@ -126,7 +113,7 @@ class GrupoUsuarioDAO implements BaseDAO {
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (PDOException $e) {
-            // Handle exception (e.g., log error)
+            error_log($e->getMessage());
             return false;
         }
     }
@@ -138,13 +125,12 @@ class GrupoUsuarioDAO implements BaseDAO {
                     WHERE PermissaoGrupo.PermissaoID = :permissaoId";
             
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':permissaoId', $permissaoId, PDO::PARAM_INT);
-            $stmt->execute();
+            $stmt->execute([':permissaoId' => $permissaoId]);
 
             $grupos = [];
 
             while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $grupos = new GrupoUsuario(
+                $grupos[] = new GrupoUsuario(
                     $row['Id'],
                     $row['Nome'],
                     $row['Descricao'],
@@ -156,6 +142,7 @@ class GrupoUsuarioDAO implements BaseDAO {
             return $grupos;
 
         } catch (PDOException $e) {
+            error_log($e->getMessage());
             return[];
         }
     }

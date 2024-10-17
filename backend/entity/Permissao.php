@@ -9,7 +9,6 @@ class Permissao {
     private $usuarioAtualizacao;
     private $ativo;
 
-    // Constructor
     public function __construct($id, $nome, $descricao, $dataCriacao, $dataAtualizacao, $usuarioAtualizacao, $ativo) {
         $this->nome = $nome;
         $this->descricao = $descricao;
