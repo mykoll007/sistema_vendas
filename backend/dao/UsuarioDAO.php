@@ -13,6 +13,85 @@ class UsuarioDAO implements BaseDAO {
         $this->db = Database::getInstance();
     }
 
+    public function getById($id) {
+        try {
+            $sql = "SELECT * FROM Usuario WHERE Id = :id";
+            $stmt = $this->db->prepare($sql);
+            
+            $stmt->execute([':id' => $id]);
+
+            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return $usuario ? new Usuario(
+                $usuario['Id'],
+                $usuario['NomeUsuario'],
+                $usuario['Senha'],
+                $usuario['Email'],
+                $usuario['GrupoUsuarioID'],
+                $usuario['Ativo'],
+                $usuario['DataCriacao'],
+                $usuario['DataAtualizacao']                
+            ) : null;
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return null;
+        }
+    }
+
+    public function getUsuarioWithGrupo($usuarioID) {
+        $sql = "SELECT 
+                    u.Id AS u_id,
+                    u.NomeUsuario AS u_nomeUsuario,
+                    u.Senha AS u_senha,
+                    u.Email AS u_email,
+                    u.GrupoUsuarioID AS u_grupoUsuarioID,
+                    u.Ativo AS u_ativo,
+                    u.DataCriacao AS u_dataCriacao,
+                    u.DataAtualizacao AS u_dataAtualizacao,
+                    u.UsuarioAtualizacao AS u_usuarioAtualizacao,
+                    g.Id AS g_id,
+                    g.Nome AS g_nome,
+                    g.Descricao AS g_descricao,
+                    g.DataCriacao AS g_dataCriacao,
+                    g.DataAtualizacao AS g_dataAtualizacao,
+                    g.UsuarioAtualizacao AS g_usuarioAtualizacao,
+                    g.Ativo AS g_ativo
+                FROM Usuario u
+                JOIN GrupoUsuario g ON u.GrupoUsuarioID = g.Id
+                WHERE u.Id = :usuarioID";
+        
+        $stmt = $this->db->prepare($sql);
+            
+        $stmt->execute([':id' => $usuarioID]);
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $grupoUsuario = new GrupoUsuario(
+            $row['g_id'],
+            $row['g_nome'],
+            $row['g_descricao'],
+            $row['g_dataCriacao'],
+            $row['g_dataAtualizacao'],
+            $row['g_ativo']
+        );
+
+        $usuario = new Usuario(
+            $row['u_Id'],
+            $row['u_NomeUsuario'],
+            $row['u_Senha'],
+            $row['u_Email'],
+            $row['u_GrupoUsuarioID'],
+            $row['u_Ativo'],
+            $row['u_DataCriacao'],
+            $row['u_DataAtualizacao']                
+        );
+
+        $usuario->setGrupoUsuario($grupoUsuario);
+
+        return $usuario;
+    }
+
+
     public function getAll() {
         try {
             $sql = "SELECT * FROM Usuario";
